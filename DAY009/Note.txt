@@ -14,3 +14,8 @@
 GitHub에서는 Repository의 설명을 적는데 사용한다.
 
 HTML로 변환이 가능하다.
+
+3. user.name, user.email 설정
+git config user.name "이름"
+git config user.name yourmail@gmail.com
+
