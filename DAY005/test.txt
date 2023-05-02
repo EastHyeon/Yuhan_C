@@ -1,0 +1,18 @@
+반환값 함수명 (변수형태 더할숫자 변수형태 더해질숫자){
+    받은걸로 실행할 명령어들
+    return 뭘 반환할건지;
+}
+
+int returnzero(int setnumber){
+    retrun 5;
+}
+
+private
+public
+protected
+
+
+
+int main(){
+    printf(retrunzero());
+}
