@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "screen.h": "c",
+        "main.h": "c",
+        "render.h": "c",
+        "utills.h": "c",
+        "windows.h": "c"
+    },
+    "files.encoding": "euckr"
+}
