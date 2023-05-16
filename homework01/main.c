@@ -6,7 +6,7 @@
 #define SCREEN_MAX_Y 30
 #define SCREEN_MAX_X 80
 #define ARRAY_SIZE SCREEN_MAX_Y * SCREEN_MAX_X + SCREEN_MAX_Y
-#define GROUND_HEIGHT 28
+#define GROUND_HEIGHT SCREEN_MAX_Y - 2
 
 #define VK_W 0x57
 #define VK_A 0x41
@@ -72,7 +72,7 @@ int TreePosX = -10;
 int randomTree = 0;
 
 DWORD currentTick = 0;
-DWORD lastTick, lastAnimationTick, lastInputTick, lastScoreTick = 0;
+DWORD lastTick, lastAnimationTick, lastInputTick, lastScoreTick, lastPhysicsTick = 0;
 
 bool legFlag = true;
 bool isDown = false;
@@ -87,7 +87,7 @@ int main() {
     enum GameState gameState = MAINMENU;
 
     system("cls");
-    system("mode con cols=81 lines=31 | title Array Dino Game for C Lecture");
+    system("title Array Dino Game for C Lecture");
     CursorHide();
 
     while (1) {
@@ -287,11 +287,14 @@ enum GameState Game() {
         TreePosX = SCREEN_MAX_X - 1;
     }
     TreePosX--;
-
-    if (player.isJumping)
-        player.posY--;
-    else
-        player.posY++;
+    
+    if(currentTick - lastPhysicsTick > 1000/35){
+        if (player.isJumping)
+            player.posY--;
+        else
+            player.posY++;
+        lastPhysicsTick = currentTick;
+    }
 
     if (player.posY > GROUND_HEIGHT) {
         player.posY = GROUND_HEIGHT;
@@ -457,12 +460,10 @@ enum GameState Game() {
 
     // Increase the score by 1 after 1 second (1000 ms).
     if(currentTick - lastScoreTick > 1000){
-        if(lastScoreTick != 0){
-            score++;
-            lastScoreTick = currentTick;
-        }
+        score++;
+        lastScoreTick = currentTick;
     }
-
+    
     char msg[50] = " ";
     sprintf(msg, "Score : %d", score);
     InputYX(msg, 1, 2);
@@ -553,5 +554,4 @@ void InitializeGame(){
     player.posY = GROUND_HEIGHT;
     player.isRuning = false;
     TreePosX = -10;
-    score = 0;
 }
