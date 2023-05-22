@@ -41,9 +41,10 @@ void GotoXYZero(void);
 int InputCenter(const char*, int);
 void InputYX(const char*, int, int);
 
-//Homework Function with pointer
+//Homework02 Function with pointer
 int WriteStringToBufferWithPointer(const char*, char*, int , int);
-//Homework Function
+
+//Homework02 Function
 int WriteStringToBuffer(const char*, int, int);
 
 enum GameState {
@@ -111,7 +112,7 @@ int main() {
             if (GetAsyncKeyState(VK_S) & 0x8000 || GetAsyncKeyState(VK_DOWN) & 0x8000) {
                 currentInput = KEY_S;
             }
-            if (GetAsyncKeyState(VK_SPACE) & 0x8000 || GetAsyncKeyState(VK_RETURN) & 0x8000) {
+            if (GetAsyncKeyState(VK_SPACE) & 0x8001 || GetAsyncKeyState(VK_RETURN) & 0x8001) {
                 currentInput = KEY_Spacebar;
             }
             lastInputTick = currentTick;
@@ -156,7 +157,7 @@ int main() {
                 screen[i] = screen2D[y][x];
         }
         WriteStringToBufferWithPointer("WriteStringToBufferWithPointer() Function Test (2, 26)", screen, 2, 26);
-        WriteStringToBufferWithPointer("Use WASD or Arrow Key", screen, 2, 28);
+        WriteStringToBufferWithPointer("Movement to WASD or Arrow Key | Select to Spacebar or Enter", screen, 2, 28);
         
 
         screen[ARRAY_SIZE - 1] = '\0';
@@ -270,6 +271,7 @@ void InitializeScreen() {
     for (int i = 0; i < SCREEN_MAX_Y * SCREEN_MAX_X; i++) {
         int y = i / SCREEN_MAX_X;
         int x = i % SCREEN_MAX_X;
+        //draw corner
         if (y == 0 && x == 0 || // 1
             x == SCREEN_MAX_X - 1 && y == 0 || // 2
             x == 0 && y == SCREEN_MAX_Y - 1 || // 3
@@ -307,7 +309,7 @@ void InputYX(const char* msg, int y, int x) {
     }
 }
 
-//Homework Function
+//Homework02 Function
 int WriteStringToBufferWithPointer(const char* string, char* buffer, int x, int y){
     for (int i = 0; i < strlen(string); i++){
         buffer[i+(y*(SCREEN_MAX_X+1)+x)] = string[i];
@@ -315,9 +317,10 @@ int WriteStringToBufferWithPointer(const char* string, char* buffer, int x, int 
     return 0;
 }
 
-//Homework Function
+//Homework02 Function
 int WriteStringToBuffer(const char* string, int x, int y){
     for (int i = 0; i < strlen(string); i++) {
         screen2D[y][x + i] = string[i];
     }
+    return 0;
 }
