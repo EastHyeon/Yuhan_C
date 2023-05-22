@@ -41,7 +41,7 @@ void GotoXYZero(void);
 int InputCenter(const char*, int);
 void InputYX(const char*, int, int);
 
-//Homework Function
+//Homework Function with pointer
 int WriteStringToBufferWithPointer(const char*, char*, int , int);
 //Homework Function
 int WriteStringToBuffer(const char*, int, int);
@@ -89,7 +89,7 @@ int main() {
     enum GameState gameState = MAINMENU;
 
     system("cls");
-    system("mode con cols=81 lines=31 | title Homework for C Lecture");
+    system("mode con cols=81 lines=31 | title Sukhee the Castaway");
     CursorHide();
 
     while (1) {
