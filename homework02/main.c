@@ -9,8 +9,8 @@
 /*     -Delete Game Logic                     */
 /*                                            */
 /*     Function Referenced                    */
-/*     167 ln                                 */
-/*     182 ln                                 */
+/*     169 ln                                 */
+/*     181 ln                                 */
 /*                                            */
 /**********************************************/
 
@@ -123,7 +123,7 @@ int main() {
 
         // Input PASS
         // Limit input rate to 1 / 15 second
-        if(currentTick - lastInputTick > 1000/10){
+        if(currentTick - lastInputTick > 1000/9){
             if (GetAsyncKeyState(VK_W) & 0x8000 || GetAsyncKeyState(VK_UP) & 0x8000) {
                 currentInput = KEY_W;
             }
@@ -177,8 +177,8 @@ int main() {
             else
                 screen[i] = screen2D[y][x];
         }
-
         WriteStringToBufferWithPointer("WriteStringToBufferWithPointer() Function Test (2, 26)", screen, 2, 26);
+        WriteStringToBufferWithPointer("Use WASD or Arrow Key", screen, 2, 28);
         
 
         screen[ARRAY_SIZE - 1] = '\0';
