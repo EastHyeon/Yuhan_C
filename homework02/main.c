@@ -23,6 +23,7 @@
 #define SCREEN_MAX_X 80
 #define ARRAY_SIZE SCREEN_MAX_Y * SCREEN_MAX_X + SCREEN_MAX_Y
 #define GROUND_HEIGHT SCREEN_MAX_Y - 2
+#define MAX_JUMP_HEIGHT SCREEN_MAX_Y - 12
 
 #define VK_W 0x57
 #define VK_A 0x41
@@ -32,7 +33,6 @@
 enum GameState MainMenu(void);
 enum GameState HelpMenu(void);
 enum GameState ExitMenu(void);
-enum GameState GameOverMenu(void);
 enum GameState Game(void);
 
 void InitializeScreen(void);
@@ -40,7 +40,6 @@ void CursorHide(void);
 void GotoXYZero(void);
 int InputCenter(const char*, int);
 void InputYX(const char*, int, int);
-void InitializeGame(void);
 
 //Homework Function
 int WriteStringToBufferWithPointer(const char*, char*, int , int);
@@ -52,7 +51,6 @@ enum GameState {
     EXITMENU,
     MAINMENU,
     GAME,
-    GAMEOVERMENU,
     HELPMENU
 };
 
@@ -83,32 +81,15 @@ struct Player
 char screen2D[SCREEN_MAX_Y][SCREEN_MAX_X];
 
 int inputValue = 0;
-char getCharTemp = ' ';
-
-struct Player player = {10, GROUND_HEIGHT, 1, false, false, false };
-bool isGameOver = false;
-char playerTexture = '#';
-char objectTexture = '%';
-int TreePosX = -10;
-int randomTree = 0;
 
 DWORD currentTick = 0;
-DWORD lastTick, lastAnimationTick, lastInputTick, lastScoreTick, lastPhysicsTick = 0;
-
-bool legFlag = true;
-bool isDown = false;
-
-bool isPause = false;
-
-#define MAX_JUMP_HEIGHT SCREEN_MAX_Y - 12
-
-int score = 0;
+DWORD lastTick, lastInputTick = 0;
 
 int main() {
     enum GameState gameState = MAINMENU;
 
     system("cls");
-    system("mode con cols=81 lines=31 | title Array Dino Game for C Lecture");
+    system("mode con cols=81 lines=31 | title Homework for C Lecture");
     CursorHide();
 
     while (1) {
@@ -123,7 +104,7 @@ int main() {
 
         // Input PASS
         // Limit input rate to 1 / 15 second
-        if(currentTick - lastInputTick > 1000/9){
+        if(currentTick - lastInputTick > 1000/10){
             if (GetAsyncKeyState(VK_W) & 0x8000 || GetAsyncKeyState(VK_UP) & 0x8000) {
                 currentInput = KEY_W;
             }
@@ -154,9 +135,6 @@ int main() {
             break;
         case HELPMENU:
             gameState = HelpMenu();
-            break;
-        case GAMEOVERMENU:
-            gameState = GameOverMenu();
             break;
         default:
             break;
@@ -215,7 +193,6 @@ enum GameState MainMenu() {
         inputValue = 0;
         switch (temp) {
         case 0:
-            InitializeGame();
             return GAME;
         case 1:
             return HELPMENU;
@@ -287,42 +264,6 @@ enum GameState Game() {
     return GAME;
 }
 
-enum GameState GameOverMenu() {
-    InputCenter("--- YOU DIED ---", 3);
-    char msg[50] = " ";
-    sprintf(msg, "Score : %d", score);
-    int xPos = InputCenter(msg, 5);
-    InputYX("Retry", 7, xPos);
-    InputYX("Return to Menu", 8, xPos);
-
-    xPos -= 2;
-
-    int yPos = inputValue + 7;
-
-    if (currentInput == KEY_W && yPos > 7)
-        inputValue--;
-    if (currentInput == KEY_S && yPos < 8)
-        inputValue++;
-
-    screen2D[yPos][xPos] = '>';
-
-    if (currentInput == KEY_Spacebar) {
-        int temp = inputValue;
-        inputValue = 0;
-        switch (temp) {
-        case 0:
-            InitializeGame();
-            return GAME;
-        case 1:
-            return MAINMENU;
-        default:
-            break;
-        }
-    }
-
-    return GAMEOVERMENU;
-}
-
 void InitializeScreen() {
     currentInput = KEY_Wait;
     GotoXYZero();
@@ -364,13 +305,6 @@ void InputYX(const char* msg, int y, int x) {
     for (int i = 0; i < strlen(msg); i++) {
         screen2D[y][x + i] = msg[i];
     }
-}
-
-void InitializeGame(){
-    player.posX = 5;
-    player.posY = GROUND_HEIGHT;
-    player.isRuning = false;
-    TreePosX = -10;
 }
 
 //Homework Function
