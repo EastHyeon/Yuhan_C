@@ -1,3 +1,19 @@
+/**********************************************/
+/*                                            */
+/*     HomeWork Project                       */
+/*     202327005 Kim Dong Hyeon               */
+/*                                            */
+/*     Changes                                */
+/*     +WriteStringToBufferWithPointer()      */
+/*     +WriteStringToBuffer() (Use 2D Array)  */
+/*     -Delete Game Logic                     */
+/*                                            */
+/*     Function Referenced                    */
+/*     167 ln                                 */
+/*     182 ln                                 */
+/*                                            */
+/**********************************************/
+
 #include <stdio.h>
 #include <windows.h>
 #include <string.h>
@@ -25,6 +41,11 @@ void GotoXYZero(void);
 int InputCenter(const char*, int);
 void InputYX(const char*, int, int);
 void InitializeGame(void);
+
+//Homework Function
+int WriteStringToBufferWithPointer(const char*, char*, int , int);
+//Homework Function
+int WriteStringToBuffer(const char*, int, int);
 
 enum GameState {
     EXIT = 0,
@@ -102,7 +123,7 @@ int main() {
 
         // Input PASS
         // Limit input rate to 1 / 15 second
-        if(currentTick - lastInputTick > 1000/20){
+        if(currentTick - lastInputTick > 1000/10){
             if (GetAsyncKeyState(VK_W) & 0x8000 || GetAsyncKeyState(VK_UP) & 0x8000) {
                 currentInput = KEY_W;
             }
@@ -144,6 +165,9 @@ int main() {
 
         //Render PASS
         char screen[ARRAY_SIZE];
+    
+        WriteStringToBuffer("WriteStringToBuffer() (2D Array Version) (2, 25)", 2, 25);
+
         for (int i = 0; i < ARRAY_SIZE; i++) {
             int y = i / (SCREEN_MAX_X + 1);
             int x = i % (SCREEN_MAX_X + 1);
@@ -153,6 +177,10 @@ int main() {
             else
                 screen[i] = screen2D[y][x];
         }
+
+        WriteStringToBufferWithPointer("WriteStringToBufferWithPointer() Function Test (2, 26)", screen, 2, 26);
+        
+
         screen[ARRAY_SIZE - 1] = '\0';
         printf("%s\n", screen);
     }
@@ -343,4 +371,19 @@ void InitializeGame(){
     player.posY = GROUND_HEIGHT;
     player.isRuning = false;
     TreePosX = -10;
+}
+
+//Homework Function
+int WriteStringToBufferWithPointer(const char* string, char* buffer, int x, int y){
+    for (int i = 0; i < strlen(string); i++){
+        buffer[i+(y*(SCREEN_MAX_X+1)+x)] = string[i];
+    }
+    return 0;
+}
+
+//Homework Function
+int WriteStringToBuffer(const char* string, int x, int y){
+    for (int i = 0; i < strlen(string); i++) {
+        screen2D[y][x + i] = string[i];
+    }
 }
