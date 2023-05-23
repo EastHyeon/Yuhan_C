@@ -8,10 +8,6 @@
 /*     +WriteStringToBuffer() (Use 2D Array)  */
 /*     -Delete Game Logic                     */
 /*                                            */
-/*     Function Referenced                    */
-/*     169 ln                                 */
-/*     181 ln                                 */
-/*                                            */
 /**********************************************/
 
 #include <stdio.h>
