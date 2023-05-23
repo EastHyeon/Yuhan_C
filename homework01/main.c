@@ -272,7 +272,7 @@ enum GameState Game() {
         isDown = false;
     }
 
-    if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+    if (GetAsyncKeyState(VK_SPACE) & 0x8000 || GetAsyncKeyState(VK_W) & 0x8000 || GetAsyncKeyState(VK_UP) & 0x8000) {
         if (player.isGrounded) {
             player.isJumping = true;
             player.isGrounded = false;

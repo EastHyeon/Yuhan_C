@@ -296,6 +296,7 @@ int InputCenter(const char* msg, int y) {
     for (int i = 0; i < strlen(msg); i++) {
         screen2D[y][xPos + i] = msg[i];
     }
+    
     return xPos;
 }
 
