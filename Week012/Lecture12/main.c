@@ -4,6 +4,13 @@
 #include "screen.h"
 #include "utilites.h"
 
+int print_title_screen(char* screenBuffer) {
+	writeStringCenterToBuffer("Game Menu", screenBuffer, 1);
+	writeStringCenterToBuffer("1. Start", screenBuffer, 3);
+	writeStringCenterToBuffer("2. Help", screenBuffer, 4);
+	writeStringCenterToBuffer("3. Exit", screenBuffer, 5);
+}
+
 int main() {
 	char screenBuffer[SCREEN_SIZE];
 
@@ -15,10 +22,7 @@ int main() {
 		clearBuffer(screenBuffer);
 
 		if (gameState == 1) {
-			writeStringCenterToBuffer("Game Menu", screenBuffer, 1);
-			writeStringCenterToBuffer("1. Start", screenBuffer, 3);
-			writeStringCenterToBuffer("2. Help", screenBuffer, 4);
-			writeStringCenterToBuffer("3. Exit", screenBuffer, 5);
+			print_title_screen(screenBuffer);
 		}
 		else if (gameState == 2) {
 			writeStringCenterToBuffer("Help", screenBuffer, 1);
