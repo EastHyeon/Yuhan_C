@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<Windows.h>
+#include<stdbool.h>
 #include<opencv/cv.h>
 #include<opencv/highgui.h>
 
@@ -23,7 +24,7 @@ int main() {
 
 	// 비디오 프레임마다 이미지로 추출 (jpg)
 
-	CvCapture* capture = cvCreateFileCapture("Resources/Videos/BadApple.mp4");
+	CvCapture* capture = cvCreateFileCapture("Resources/Videos/Idol.mp4");
 
 	if (!capture)
 	{
@@ -32,35 +33,78 @@ int main() {
 	}
 
 	IplImage* frame;
+	IplImage* grayFrame;
 	int frameCount = 0;  // 추출한 프레임 수를 세는 변수
+	bool ConvertingFlag = true;
+	bool isSelectMaxFrame = false;
 
-	for (int i = 0; i < 100; i++)
-	{
-		frame = cvQueryFrame(capture);
-		char filename[50];
-		sprintf_s(filename, sizeof(filename), "Generated/BadApple/frame_%d.jpg", frameCount);  // 이미지 파일 이름을 생성합니다
-		cvSaveImage(filename, frame, 0);  // 현재 프레임을 이미지로 저장합니다.
-		printf("frame_%d saved\n", frameCount);
+	const char bar = '=';
+	const char blank = ' ';
+	const int LEN = 20;
+	int maxFrameCount = 500;
 
-		frameCount++;
+	if (isSelectMaxFrame)
+		maxFrameCount = (int)cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT);
+
+	int bar_count = 0;
+	float percent = 0.0f;
+	if (ConvertingFlag) {
+		for (int i = 0; i < maxFrameCount; i++)
+		{
+			// 프레임을 가져옴
+			frame = cvQueryFrame(capture);
+			if (!frame)
+				break;
+
+			grayFrame = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
+
+			// 흑백으로 변환
+			cvCvtColor(frame, grayFrame, CV_BGR2GRAY);
+
+			char filename[50];
+			sprintf_s(filename, sizeof(filename), "Generated/Idol/frame_%d.jpg", frameCount);  // 이미지 파일 이름을 생성
+			cvSaveImage(filename, grayFrame, 0);  // 현재 프레임을 이미지로 저장
+
+			printf("\r Converting video to image... %d/%d [", frameCount, (maxFrameCount - 1));
+
+			percent = (float)frameCount / (maxFrameCount - 1) * 100;
+			bar_count = percent / (100 / LEN);
+			for (int i = 0; i < LEN; i++)
+			{
+				if (bar_count > i) {
+					printf("%c", bar);
+				}
+				else {
+					printf("%c", blank);
+				}
+			}
+			printf("] %0.2f%%", percent);
+			frameCount++;
+		}
+		cvReleaseCapture(&capture);
+		cvReleaseImage(&grayFrame);
 	}
 	
 	system("cls");
-	cvReleaseCapture(&capture);
+	printf("\rConverting Complete");
+	Sleep(1000);
 
 	int lastTick = 0;
 
 	int i = 0;
-	while(i < frameCount - 1) {
+	while(i < frameCount) {
 		int currentTick = GetTickCount();
 		if (currentTick - lastTick < 1000/30)
 			continue;
 		else {
 			lastTick = currentTick;
 			char Adress[50];
-			sprintf_s(Adress, sizeof(Adress), "Generated/BadApple/frame_%d.jpg", i);  // 이미지 파일 이름을 생성합니다.
+			sprintf_s(Adress, sizeof(Adress), "Generated/Idol/frame_%d.jpg", i);  // 이미지 파일 이름을 생성합니다.
 			GotoXYZero();
-			GenerateImageToASCII(Adress, 50);
+			GenerateImageToASCII(Adress, 100);
+			sprintf_s(Adress, sizeof(Adress), "Current frame: %d", i);  // 이미지 파일 이름을 생성합니다.
+			printf("%s", Adress);
+			GotoXYZero();
 			i++;
 		}
 	}
