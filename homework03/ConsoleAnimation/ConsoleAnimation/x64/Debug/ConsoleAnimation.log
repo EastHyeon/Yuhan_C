@@ -1,2 +1,7 @@
 ﻿  main.c
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(59,22): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(50,32): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(51,33): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(78,57): warning C4244: '초기화 중': 'double'에서 'unsigned char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(81,16): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   ConsoleAnimation.vcxproj -> D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\x64\Debug\ConsoleAnimation.exe
