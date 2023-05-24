@@ -38,7 +38,7 @@ int main() {
 	bool ConvertingFlag = true;
 	bool isSelectMaxFrame = false;
 
-	const char bar = '=';
+	const char bar = '-';
 	const char blank = ' ';
 	const int LEN = 20;
 	int maxFrameCount = 500;
