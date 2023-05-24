@@ -1,8 +1,10 @@
 #include<stdio.h>
+#include<Windows.h>
 #include<opencv/cv.h>
 #include<opencv/highgui.h>
 
 void GenerateImageToASCII(const char*, int);
+void GotoXYZero();
 
 int main() {
 	//IplImage* img = cvCreateImage(cvSize(600, 600), IPL_DEPTH_8U, 1);
@@ -29,9 +31,39 @@ int main() {
 		return -1;
 	}
 
-	GenerateImageToASCII("Resources/TestImage.jpg", 50);
+	IplImage* frame;
+	int frameCount = 0;  // 추출한 프레임 수를 세는 변수
 
+	for (int i = 0; i < 100; i++)
+	{
+		frame = cvQueryFrame(capture);
+		char filename[50];
+		sprintf_s(filename, sizeof(filename), "Generated/BadApple/frame_%d.jpg", frameCount);  // 이미지 파일 이름을 생성합니다
+		cvSaveImage(filename, frame, 0);  // 현재 프레임을 이미지로 저장합니다.
+		printf("frame_%d saved\n", frameCount);
 
+		frameCount++;
+	}
+	
+	system("cls");
+	cvReleaseCapture(&capture);
+
+	int lastTick = 0;
+
+	int i = 0;
+	while(i < frameCount - 1) {
+		int currentTick = GetTickCount();
+		if (currentTick - lastTick < 1000/30)
+			continue;
+		else {
+			lastTick = currentTick;
+			char Adress[50];
+			sprintf_s(Adress, sizeof(Adress), "Generated/BadApple/frame_%d.jpg", i);  // 이미지 파일 이름을 생성합니다.
+			GotoXYZero();
+			GenerateImageToASCII(Adress, 50);
+			i++;
+		}
+	}
 
 	return 0;
 }
@@ -61,16 +93,14 @@ void GenerateImageToASCII(const char* ImageAdress, int width) {
 	// 목표 이미지 크기로 이미지를 생성
 	resizedImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
 
-	char buffer[60];
-	// 말 못함 이거 string.h 에 있음 이건 printf에서 포멧 기능만 가져온거임
-	sprintf_s(buffer, sizeof(buffer), "mode con cols=%d lines=%d | title Generated", width, height);
-	system(buffer);
-
-	// 전화 중 소리 못들음 and 말 못함 채팅으로 ㄱㄱ
-
 	// 원본 이미지를 resizedImage로 선형으로 크기를 변환하여 넣음
 	cvResize(sourceImage, resizedImage, CV_INTER_LINEAR);
 
+	 int bufferSize = width * height + height;
+	 // bufferSize 만큼 메모리에 동적할당
+	char* screenBuffer = malloc(bufferSize*(sizeof(char)));
+
+	int bufferIndex = 0;
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
@@ -79,14 +109,24 @@ void GenerateImageToASCII(const char* ImageAdress, int width) {
 			int iPixel = pixel;
 			float fIndex = pixel / 256.0f * strlen(asciiChars);
 			int index = fIndex;
-			printf("%c", asciiChars[index]);
+			screenBuffer[bufferIndex] = asciiChars[index];
+			bufferIndex++;
 		}
-		printf("\n");
+		screenBuffer[bufferIndex] = '\n';
+		bufferIndex++;
 	}
-
+	screenBuffer[bufferIndex - 1] = '\0';
+	printf("%s\n", screenBuffer);
 	cvSaveImage("Generated/TestImage.jpg", resizedImage, NULL);
 
-	// 이미지 할당 해제
+
+	// 메모리 할당 해제
+	free(screenBuffer);
 	cvReleaseImage(&sourceImage);
 	cvReleaseImage(&resizedImage);
+}
+
+void GotoXYZero() {
+	COORD pos = { 0, 0 };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
