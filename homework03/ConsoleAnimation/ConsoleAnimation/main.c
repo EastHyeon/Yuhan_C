@@ -30,7 +30,7 @@ int main() {
 	IplImage* frame;
 	IplImage* grayFrame;
 	int frameCount = 0;  // 추출한 프레임 수를 세는 변수
-	bool ConvertingFlag = true;
+	bool ConvertingFlag = false;
 	bool isSelectMaxFrame = false;
 
 	const char bar = '-';
@@ -100,7 +100,7 @@ int main() {
 			char Adress[50];
 			sprintf_s(Adress, sizeof(Adress), "%s/frame_%d.jpg", frameAdress, i);
 			GotoXYZero();
-			GenerateImageToASCII(Adress, 80);
+			GenerateImageToASCII(Adress, 200);
 			sprintf_s(Adress, sizeof(Adress), "Current frame: %d", i);
 			printf("%s", Adress);
 			GotoXYZero();
@@ -164,7 +164,6 @@ void GenerateImageToASCII(const char* ImageAdress, int width) {
 	}
 	screenBuffer[bufferIndex - 1] = '\0';
 	printf("%s\n", screenBuffer);
-	cvSaveImage("Generated/TestImage.jpg", resizedImage, NULL);
 
 
 	// 메모리 할당 해제
