@@ -4,19 +4,38 @@
 #include<opencv/cv.h>
 #include<opencv/highgui.h>
 
-void GenerateImageToASCII(const char*, int);
-void GotoXYZero();
+void PlayASCIIVideo(const char*);
+void GenerateASCIIbyImage(char*, IplImage*, int, int);
+void GotoXY(int, int); 
+void SetCursorHide(void);
+void SetConsoleFontSize(int);
+
+enum WindowState {
+	EXIT = 0,
+	EXITMENU,
+	MAINMENU,
+	VIDEO,
+	IMG,
+	HELPMENU
+};
+
+#define DEFAULT_WIDTH 100
+#define DEFAULT_HEIGHT 40
 
 int main() {
+	system("title Console Animation");
+	SetCursorHide();
 
-	// 비디오 프레임마다 이미지로 추출 (jpg)
+	PlayASCIIVideo("OshinoKo-Idol");
+	
+	system("cls");
+	Sleep(1000);
+	return 0;
+}
 
-	const char* videoName = "BadApple";
-
+void PlayASCIIVideo(const char* videoName) {
 	char videoAdress[100] = "";
-	sprintf_s(videoAdress, sizeof(videoAdress), "Resources/Videos/%s.mp4", videoName);
-	char frameAdress[100] = "";
-	sprintf_s(frameAdress, sizeof(frameAdress), "Generated/%s/", videoName);
+	sprintf_s(videoAdress, sizeof(videoAdress), "Resources\\Videos\\%s.mp4", videoName);
 
 	CvCapture* capture = cvCreateFileCapture(videoAdress);
 
@@ -29,150 +48,121 @@ int main() {
 
 	IplImage* frame;
 	IplImage* grayFrame;
-	int frameCount = 0;  // 추출한 프레임 수를 세는 변수
-	bool ConvertingFlag = false;
-	bool isSelectMaxFrame = false;
+	IplImage* outputImage;
 
-	const char bar = '-';
-	const char blank = ' ';
-	const int LEN = 20;
-	int maxFrameCount = 500;
-
-	if (isSelectMaxFrame)
-		maxFrameCount = (int)cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT);
-
-	int bar_count = 0;
-	float percent = 0.0f;
-	if (ConvertingFlag) {
-		for (int i = 0; i < maxFrameCount; i++)
-		{
-			// 프레임을 가져옴
-			frame = cvQueryFrame(capture);
-			if (!frame)
-				break;
-
-			grayFrame = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
-
-			// 흑백으로 변환
-			cvCvtColor(frame, grayFrame, CV_BGR2GRAY);
-
-			char filename[50];
-			sprintf_s(filename, sizeof(filename), "%sframe_%d.jpg", frameAdress, frameCount);  // 이미지 파일 이름을 생성
-			cvSaveImage(filename, grayFrame, 0);  // 현재 프레임을 이미지로 저장
-
-			printf("\r Converting %s video to image... %d/%d [", videoName, frameCount, (maxFrameCount - 1));
-
-			percent = (float)frameCount / (maxFrameCount - 1) * 100;
-			bar_count = percent / (100 / LEN);
-			for (int i = 0; i < LEN; i++)
-			{
-				if (bar_count > i) {
-					printf("%c", bar);
-				}
-				else {
-					printf("%c", blank);
-				}
-			}
-			printf("] %0.2f%%", percent);
-			frameCount++;
-		}
-		cvReleaseCapture(&capture);
-		cvReleaseImage(&grayFrame);
-	}
+	float frameWidth = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH);
+	float frameHeight = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT);
+	float frameRate = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
+	float frameCount = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT);
 	
-	system("cls");
-	printf("\rConverting Complete");
-	Sleep(1000);
+	float imageRatio = 0.0f;
 
-	int lastTick = 0;
+	int DestWidth = 0;
+	int DestHeight = 140;
 
-	if (!ConvertingFlag) {
-		frameCount = maxFrameCount;
-	}
+	if (frameWidth > frameHeight)
+		imageRatio = frameWidth / frameHeight;
+	else
+		imageRatio = frameHeight / frameWidth;
 
-	int i = 0;
-	while(i < frameCount) {
-		int currentTick = GetTickCount();
-		if (currentTick - lastTick < 1000/30)
-			continue;
-		else {
-			lastTick = currentTick;
-			char Adress[50];
-			sprintf_s(Adress, sizeof(Adress), "%s/frame_%d.jpg", frameAdress, i);
-			GotoXYZero();
-			GenerateImageToASCII(Adress, 200);
-			sprintf_s(Adress, sizeof(Adress), "Current frame: %d", i);
-			printf("%s", Adress);
-			GotoXYZero();
-			i++;
-		}
-	}
+	DestWidth = imageRatio * DestHeight;
+	DestWidth = DestWidth * 2;
 
-	return 0;
-}
-
-void GenerateImageToASCII(const char* ImageAdress, int width) {
-	// 명도를 표현할 character 배열
-	char asciiChars[14] = " .,-~:;=!*#$@\0";
+	// bufferSize 크기의 screenBuffer 메모리에 동적할당
+	int bufferSize = DestWidth * DestHeight + DestHeight;
+	char* screenBuffer = malloc(bufferSize * (sizeof(char)));
 
 
-	// 이미지 선언
-	IplImage* sourceImage = 0;
-	IplImage* resizedImage = 0;
-	// 이미지 흑백으로 로드 (iscolor > 0 이면 컬러, = 0 이면 흑백으로 변환, < 0 이면 원본 그대로)
-	sourceImage = cvLoadImage(ImageAdress, CV_LOAD_IMAGE_GRAYSCALE);
+	char commandMeg[90] = "";
+	SetConsoleFontSize(4);
+	sprintf_s(commandMeg, sizeof(commandMeg), "mode con cols=%d lines=%d | title Playing %s", DestWidth, DestHeight, videoName);
+	system(commandMeg);
+	SetCursorHide();
 
-	if (!sourceImage)
-		printf("fetal error!");
 
-	//이미지 크기 구하기
-	float imageWidth = sourceImage->width;
-	float imageHeight = sourceImage->height;
-
-	// 목표 이미지 값
-	int height = 0;
-
-	// 이미지 비율
-	float imageRatio = imageHeight / imageWidth;
-	// 이미지 비율에 목표 가로크기를 곱해서 목표 세로크기를 구함
-	height = imageRatio * width;
-	width = width * 2;
-	// 목표 이미지 크기로 이미지를 생성
-	resizedImage = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
-
-	// 원본 이미지를 resizedImage로 선형으로 크기를 변환하여 넣음
-	cvResize(sourceImage, resizedImage, CV_INTER_LINEAR);
-
-	 int bufferSize = width * height + height;
-	 // bufferSize 만큼 메모리에 동적할당
-	char* screenBuffer = malloc(bufferSize*(sizeof(char)));
-
-	int bufferIndex = 0;
-	for (int y = 0; y < height; y++)
+	DWORD lastTick = 0;
+	while (true)
 	{
-		for (int x = 0; x < width; x++)
-		{
-			unsigned char pixel = cvGet2D(resizedImage, y, x).val[0];
-			int iPixel = pixel;
-			float fIndex = pixel / 256.0f * strlen(asciiChars);
-			int index = fIndex;
-			screenBuffer[bufferIndex] = asciiChars[index];
-			bufferIndex++;
-		}
-		screenBuffer[bufferIndex] = '\n';
-		bufferIndex++;
-	}
-	screenBuffer[bufferIndex - 1] = '\0';
-	printf("%s\n", screenBuffer);
+		GotoXY(0, 0);
 
+		DWORD currentTick = GetTickCount();
+		if (currentTick - lastTick < 31.5f)
+			continue;
+		lastTick = currentTick;
+
+		frame = cvQueryFrame(capture); // 프레임을 가져옴
+
+		if (!frame)
+			break;
+
+		grayFrame = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
+		outputImage = cvCreateImage(cvSize(DestWidth, DestHeight), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
+
+
+		cvCvtColor(frame, grayFrame, CV_BGR2GRAY); // 흑백으로 변환
+		cvResize(grayFrame, outputImage, CV_INTER_LINEAR);
+		GenerateASCIIbyImage(screenBuffer, outputImage, DestWidth, DestHeight);
+		printf("%s", screenBuffer);
+	}
 
 	// 메모리 할당 해제
 	free(screenBuffer);
-	cvReleaseImage(&sourceImage);
-	cvReleaseImage(&resizedImage);
+	cvReleaseCapture(&capture);
+	cvReleaseImage(&grayFrame);
+	system("cls");
+	SetConsoleFontSize(12);
+	sprintf_s(commandMeg, sizeof(commandMeg), "mode con cols=%d lines=%d", DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	system(commandMeg);
 }
 
-void GotoXYZero() {
-	COORD pos = { 0, 0 };
+void GenerateASCIIbyImage(char* targetBuffer, IplImage* outputImage, int width, int height) {
+	// 명도를 표현할 character 배열
+	char asciiChars[14] = " .,-~:;=!*#$@\0";
+
+	if (!outputImage)
+		printf("fetal error!");
+
+
+	for (int i = 0; i < (height * width + height); i++)
+	{
+		int y = i / (width + 1);
+		int x = i % (width + 1);
+		if (x == width)
+			targetBuffer[i] = '\n';
+		else {
+			unsigned char pixel = cvGet2D(outputImage, y, x).val[0];
+			int iPixel = pixel;
+			float fIndex = pixel / 256.0f * strlen(asciiChars);
+			int index = fIndex;
+			targetBuffer[i] = asciiChars[index];
+		}
+	}
+	targetBuffer[(height * width + height) - 1] = '\0';
+
+	// 메모리 할당 해제
+	cvReleaseImage(&outputImage);
+}
+
+void GotoXY(int x, int y) {
+	COORD pos = { x, y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
+void SetCursorHide() {
+	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+	cursorInfo.dwSize = 1;
+	cursorInfo.bVisible = false;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+
+void SetConsoleFontSize(int size)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	CONSOLE_FONT_INFOEX fontInfo = { sizeof(CONSOLE_FONT_INFOEX) };
+	GetCurrentConsoleFontEx(hConsole, FALSE, &fontInfo);
+
+	fontInfo.dwFontSize.Y = size; // 폰트의 세로 크기를 변경합니다.
+
+	SetCurrentConsoleFontEx(hConsole, FALSE, &fontInfo);
 }
