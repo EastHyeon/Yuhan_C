@@ -8,27 +8,22 @@ void GenerateImageToASCII(const char*, int);
 void GotoXYZero();
 
 int main() {
-	//IplImage* img = cvCreateImage(cvSize(600, 600), IPL_DEPTH_8U, 1);
-	//for (int y = 0; y < img->height; y++) {
-	//	for (int x = 0; x < img->width; x++) {
-	//		int idx = y + x * img->widthStep;
-	//		img->imageData[idx] = 100;
-	//	}
-	//}
-	//cvNamedWindow("img", CV_WINDOW_AUTOSIZE);
-	//cvShowImage("img", img);
-	//cvSaveImage("img.png", img, NULL);
-	//cvWaitKey(0);
-	//cvDestroyAllWindows();
-	//return 0;
 
 	// 비디오 프레임마다 이미지로 추출 (jpg)
 
-	CvCapture* capture = cvCreateFileCapture("Resources/Videos/Idol.mp4");
+	const char* videoName = "BadApple";
+
+	char videoAdress[100] = "";
+	sprintf_s(videoAdress, sizeof(videoAdress), "Resources/Videos/%s.mp4", videoName);
+	char frameAdress[100] = "";
+	sprintf_s(frameAdress, sizeof(frameAdress), "Generated/%s/", videoName);
+
+	CvCapture* capture = cvCreateFileCapture(videoAdress);
 
 	if (!capture)
 	{
 		printf("Could not open video file\n");
+		printf("%s", videoAdress);
 		return -1;
 	}
 
@@ -41,7 +36,7 @@ int main() {
 	const char bar = '-';
 	const char blank = ' ';
 	const int LEN = 20;
-	int maxFrameCount = 1000;
+	int maxFrameCount = 500;
 
 	if (isSelectMaxFrame)
 		maxFrameCount = (int)cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT);
@@ -62,10 +57,10 @@ int main() {
 			cvCvtColor(frame, grayFrame, CV_BGR2GRAY);
 
 			char filename[50];
-			sprintf_s(filename, sizeof(filename), "Generated/Idol/frame_%d.jpg", frameCount);  // 이미지 파일 이름을 생성
+			sprintf_s(filename, sizeof(filename), "%sframe_%d.jpg", frameAdress, frameCount);  // 이미지 파일 이름을 생성
 			cvSaveImage(filename, grayFrame, 0);  // 현재 프레임을 이미지로 저장
 
-			printf("\r Converting video to image... %d/%d [", frameCount, (maxFrameCount - 1));
+			printf("\r Converting %s video to image... %d/%d [", videoName, frameCount, (maxFrameCount - 1));
 
 			percent = (float)frameCount / (maxFrameCount - 1) * 100;
 			bar_count = percent / (100 / LEN);
@@ -91,6 +86,10 @@ int main() {
 
 	int lastTick = 0;
 
+	if (!ConvertingFlag) {
+		frameCount = maxFrameCount;
+	}
+
 	int i = 0;
 	while(i < frameCount) {
 		int currentTick = GetTickCount();
@@ -99,10 +98,10 @@ int main() {
 		else {
 			lastTick = currentTick;
 			char Adress[50];
-			sprintf_s(Adress, sizeof(Adress), "Generated/Idol/frame_%d.jpg", i);  // 이미지 파일 이름을 생성합니다.
+			sprintf_s(Adress, sizeof(Adress), "%s/frame_%d.jpg", frameAdress, i);
 			GotoXYZero();
-			GenerateImageToASCII(Adress, 100);
-			sprintf_s(Adress, sizeof(Adress), "Current frame: %d", i);  // 이미지 파일 이름을 생성합니다.
+			GenerateImageToASCII(Adress, 80);
+			sprintf_s(Adress, sizeof(Adress), "Current frame: %d", i);
 			printf("%s", Adress);
 			GotoXYZero();
 			i++;
@@ -116,11 +115,15 @@ void GenerateImageToASCII(const char* ImageAdress, int width) {
 	// 명도를 표현할 character 배열
 	char asciiChars[14] = " .,-~:;=!*#$@\0";
 
+
 	// 이미지 선언
 	IplImage* sourceImage = 0;
 	IplImage* resizedImage = 0;
 	// 이미지 흑백으로 로드 (iscolor > 0 이면 컬러, = 0 이면 흑백으로 변환, < 0 이면 원본 그대로)
 	sourceImage = cvLoadImage(ImageAdress, CV_LOAD_IMAGE_GRAYSCALE);
+
+	if (!sourceImage)
+		printf("fetal error!");
 
 	//이미지 크기 구하기
 	float imageWidth = sourceImage->width;
