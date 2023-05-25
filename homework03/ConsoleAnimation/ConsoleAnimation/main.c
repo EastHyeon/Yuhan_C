@@ -41,7 +41,7 @@ int main() {
 	const char bar = '-';
 	const char blank = ' ';
 	const int LEN = 20;
-	int maxFrameCount = 500;
+	int maxFrameCount = 1000;
 
 	if (isSelectMaxFrame)
 		maxFrameCount = (int)cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT);
