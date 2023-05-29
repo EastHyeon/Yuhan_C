@@ -6,7 +6,6 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 	char audioAdress[150] = "";
 	sprintf_s(videoAdress, sizeof(videoAdress), BASE_VIDEO_ADRESS, videoName);
 
-
 	bool isPaused = false;
 	int Key;
 	FMOD_CHANNEL* Channel = 0;
