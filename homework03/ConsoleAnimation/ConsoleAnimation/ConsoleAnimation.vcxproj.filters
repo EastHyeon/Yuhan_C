@@ -18,9 +18,6 @@
     <ClCompile Include="main.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="csound.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="asciicmedia.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
