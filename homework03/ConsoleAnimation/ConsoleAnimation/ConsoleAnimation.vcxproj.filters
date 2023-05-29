@@ -18,5 +18,31 @@
     <ClCompile Include="main.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="csound.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="asciicmedia.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="input.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="utilites.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="asciimedia.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="utilites.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

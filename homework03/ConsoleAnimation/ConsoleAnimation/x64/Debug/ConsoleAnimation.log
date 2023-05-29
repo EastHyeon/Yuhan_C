@@ -1,10 +1,31 @@
-﻿  main.c
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(46,12): warning C4098: 'PlayASCIIVideo': 'void' 함수에서 값을 반환하고 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(68,25): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(53,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(54,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(55,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(56,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(133,56): warning C4244: '초기화 중': 'double'에서 'unsigned char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\main.c(136,16): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  asciicmedia.c
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(26,49): warning C4133: '함수': 'bool *'과(와) 'FMOD_BOOL *' 사이의 형식이 호환되지 않습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(36,12): warning C4098: 'PlayASCIIVideo': 'void' 함수에서 값을 반환하고 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(59,25): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(77,2): warning C4013: 'SetConsoleFontSize'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(80,2): warning C4013: 'SetCursorHide'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(121,3): warning C4013: 'SetCursorPosition'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(122,3): warning C4013: 'SetConsoleTextColor'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(251,23): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(270,23): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(43,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(44,22): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(45,20): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(46,19): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(67,36): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(11,6): warning C4101: 'Key' :참조되지 않은 지역 변수입니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(324,70): warning C4244: '초기화 중': 'double'에서 'unsigned char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(327,16): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(347,24): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(348,32): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(343,28): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(344,35): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(369,69): warning C4244: '초기화 중': 'double'에서 'unsigned char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(372,16): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(394,24): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(395,26): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(390,28): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(391,29): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(418,69): warning C4244: '초기화 중': 'double'에서 'unsigned char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\ConsoleAnimation\asciicmedia.c(421,16): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   ConsoleAnimation.vcxproj -> D:\WORKSPACE\Yuhan_C\homework03\ConsoleAnimation\x64\Debug\ConsoleAnimation.exe
