@@ -11,8 +11,8 @@
 #include "input.h"
 #include "utilites.h"
 
-#define BASE_VIDEO_ADRESS "Resources\\Videos\\%s.mp4"
-#define BASE_AUDIO_ADRESS "Resources\\Audios\\%s.mp3"
+#define BASE_VIDEO_ADRESS "Resources\\Videos\\%s"
+#define BASE_AUDIO_ADRESS "Resources\\Audios\\%s"
 
 #define MAX_COLOR_RANGE 14
 
@@ -20,10 +20,13 @@
 /// 폰트 크기를 4로 설정하고
 /// 영상을 아스키아트로 변환하여 출력합니다.
 /// </summary>
-/// <param name=""> 영상의 파일명 (확장자명 제외, mp4 확장자만 받습니다.)</param>
+/// <param name="videoName"> 영상의 파일명 (확장자명 제외, mp4 확장자만 받습니다.)</param>
+/// <param name=""> Fmod System 구조체 </param>
 /// <param name=""> 영상의 세로길이 </param>
 /// <param name=""> 영상의 가로길이 제한 </param>
-void PlayASCIIVideo(const char*, FMOD_SYSTEM*, int, int, int*);
+/// <param name=""> 폰트 사이즈 </param>
+int PlayASCIIVideo(const char*, int, int, int*);
+void PlaySimpleASCIIVideo(const char*, int, int, int*);
 /// <summary>
 /// IplImage를 읽어서 문자열로 변환해 줍니다. 성능상 문제로 이미지 크기를 직접 받습니다.
 /// </summary>

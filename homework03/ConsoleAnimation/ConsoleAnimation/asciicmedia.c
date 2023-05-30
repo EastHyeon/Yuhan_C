@@ -1,14 +1,21 @@
 #include "asciimedia.h"
 
-void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, int widthLimit, int* fontSize) {
+int PlayASCIIVideo(const char* videoName, int width, int heightLimit, int* fontSize) {
+	FMOD_SYSTEM* FMODSystem;
+
+	FMOD_System_Create(&FMODSystem);
+	FMOD_System_Init(FMODSystem, 32, FMOD_INIT_NORMAL, NULL);
+
 	char videoAdress[150] = "";
 	char audioAdress[150] = "";
 	sprintf_s(videoAdress, sizeof(videoAdress), BASE_VIDEO_ADRESS, videoName);
 
+	int repeatFlag = 1;
+
 	bool isPaused = false;
 	int Key;
 	FMOD_CHANNEL* Channel = 0;
-	float Volume = 0.5f;
+	float Volume = 0.1f;
 	FMOD_SOUND* Sound = 0;
 	bool IsFmodPlaying = false;
 
@@ -17,7 +24,9 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 
 	if (Sound != 0)
 		FMOD_Sound_Release(Sound);
+
 	sprintf_s(audioAdress, sizeof(audioAdress), BASE_AUDIO_ADRESS, videoName);
+	audioAdress[strlen(audioAdress) - 1] = '3';
 	FMOD_System_CreateSound(FMODSystem, audioAdress, FMOD_DEFAULT, 0, &Sound);
 
 	if (Channel != 0)
@@ -45,26 +54,25 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 
 	float imageRatio = 0.0f;
 
-	int DestWidth = 0;
-	int DestHeight = height - 4;
-
 
 	if (frameWidth > frameHeight)
 		imageRatio = frameWidth / frameHeight;
 	else
 		imageRatio = frameHeight / frameWidth;
 
-	DestWidth = imageRatio * DestHeight;
-	DestWidth = DestWidth * 2;
+	int DestWidth = width;
+	int DestHeight = (width / 2) / imageRatio;
 
-	if (DestWidth > widthLimit) {
-		DestWidth = widthLimit;
+	int videoHeightLimit = heightLimit - 4;
+
+	if (DestHeight > videoHeightLimit - 4 && videoHeightLimit != 0) {
+		DestHeight = videoHeightLimit;
 	}
 
 	int iconWidth = DestWidth / 20;
-	int iconHeight = DestHeight * 1.5 / 20;
+	int iconHeight = heightLimit * 1.5 / 20;
 
-	int extraSpace = (widthLimit / 2) - (DestWidth / 2);
+	int extraSpace = (width / 2) - (DestWidth / 2);
 	// 한 프레임을 저장할 버퍼의 크기
 	int bufferSize = (DestWidth + extraSpace) * DestHeight + DestHeight;
 	int iconBufferSize = iconWidth * iconHeight + iconHeight;
@@ -73,7 +81,7 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 
 	char commandMessage[150] = "";
 	SetConsoleFontSize(*fontSize);
-	sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", widthLimit, height, videoName, *fontSize);
+	sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", width, heightLimit, videoName, *fontSize);
 	system(commandMessage);
 	SetCursorHide();
 
@@ -87,8 +95,8 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 	cvResize(splayImage, playImage, CV_INTER_LINEAR);
 	cvResize(spauseImage, pauseImage, CV_INTER_LINEAR);
 
-	const int LEN = widthLimit - (widthLimit * 20) / 100;
-	const int VolumeLEN = widthLimit * 20 / 100;
+	const int LEN = width - (width * 20) / 100;
+	const int VolumeLEN = width * 20 / 100;
 	char* playBarBuffer = malloc((LEN + 1) * (sizeof(char)));
 	char* volumeBarBuffer = malloc(VolumeLEN + 1 * (sizeof(char)));
 	const char bar = '@';
@@ -101,20 +109,23 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 	int currentFrame = 0;
 
 	unsigned int maxTime = 0;
+
 	FMOD_Sound_GetLength(Sound, &maxTime, FMOD_TIMEUNIT_MS);
+	maxTime = maxTime / 2;
 	unsigned int currentTime = 0;
 
 	bool isPause = false;
 
 	int startXPosition = (DestWidth / 2 + extraSpace) - iconWidth / 2;
-	int startYPosition = DestHeight / 2 - iconHeight / 2;
+	int startYPosition = heightLimit / 2 - iconHeight / 2;
 
 	FMOD_System_PlaySound(FMODSystem, Sound, 0, 0, &Channel);
+	FMOD_Channel_SetVolume(Channel, Volume);
 
 	DWORD lastTick = 0;
 	DWORD lastInputTick = 0;
 	DWORD lastPauseTick = 0;
-	while (currentFrame < frameCount)
+	while (true)
 	{
 		SetCursorPosition(0, 0);
 		SetConsoleTextColor(White);
@@ -126,6 +137,8 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 
 		if (currentTick - lastInputTick > 1000 / 7) {
 			if (GetAsyncKeyState(VK_LEFT) & 0x8001) {
+				isPause = true;
+				FMOD_Channel_SetPaused(Channel, isPause);
 				FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
 				currentFrame = currentFrame - (24 * 5);
 				currentTime = currentTime - 5000;
@@ -136,18 +149,24 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 				FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
 				cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
 				frame = cvQueryFrame(capture);
+				isPause = false;
+				FMOD_Channel_SetPaused(Channel, isPause);
 			}
 			if (GetAsyncKeyState(VK_RIGHT) & 0x8001) {
+				isPause = true;
+				FMOD_Channel_SetPaused(Channel, isPause);
 				FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
 				currentFrame = currentFrame + (24 * 5);
 				currentTime = currentTime + 5000;
 				if (currentFrame >= frameCount) {
 					currentFrame = frameCount - 1;
-					currentTime = maxTime;
+					currentTime = maxTime - 1;
 				}
 				FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
 				cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
 				frame = cvQueryFrame(capture);
+				isPause = false;
+				FMOD_Channel_SetPaused(Channel, isPause);
 			}
 			if (GetAsyncKeyState(VK_UP) & 0x8001) {
 				Volume += 0.1f;
@@ -169,7 +188,7 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 					*fontSize = 2;
 				}
 				SetConsoleFontSize(*fontSize);
-				sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", widthLimit, height, videoName, *fontSize);
+				sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", width, heightLimit, videoName, *fontSize);
 				system(commandMessage);
 				isPause = false;
 				FMOD_Channel_SetPaused(Channel, isPause);
@@ -182,17 +201,54 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 					*fontSize = 6;
 				}
 				SetConsoleFontSize(*fontSize);
-				sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", widthLimit, height, videoName, *fontSize);
+				sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", width, heightLimit, videoName, *fontSize);
 				system(commandMessage);
 				isPause = false;
 				FMOD_Channel_SetPaused(Channel, isPause);
 				FMOD_Channel_SetPosition(Channel, currentFrame * 1000 / 24, FMOD_TIMEUNIT_MS);
 			}
 			if (GetAsyncKeyState(VK_ESCAPE) & 0x8001) {
+				repeatFlag = 0;
 				break;
 			}
 			lastInputTick = currentTick;
 		}
+
+		percent = (float)currentFrame / MAX * 100;
+		bar_count = percent / tick;
+		int barIndex = 0;
+
+		for (int i = 0; i < LEN; i++)
+		{
+			if (bar_count > barIndex)
+				playBarBuffer[i] = bar;
+			else
+				playBarBuffer[i] = blank;
+			barIndex++;
+		}
+		playBarBuffer[LEN - 1] = '\0';
+		SetConsoleTextColor(Green);
+		SetCursorPosition(0, heightLimit - 3);
+		puts(playBarBuffer);
+		puts(playBarBuffer);
+
+		SetConsoleTextColor(White);
+		percent = (float)Volume / 1.0f * 100;
+		bar_count = percent / volumeTick;
+		barIndex = 0;
+		for (int i = 0; i < VolumeLEN; i++)
+		{
+			if (bar_count > barIndex)
+				volumeBarBuffer[i] = bar;
+			else
+				volumeBarBuffer[i] = blank;
+			barIndex++;
+		}
+		volumeBarBuffer[VolumeLEN - 1] = '\0';
+		SetCursorPosition(LEN + 1, heightLimit - 3);
+		puts(volumeBarBuffer);
+		SetCursorPosition(LEN + 1, heightLimit - 2);
+		puts(volumeBarBuffer);
 
 		if (!isPause)
 			frame = cvQueryFrame(capture); // 프레임을 가져옴
@@ -206,6 +262,7 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 		cvCvtColor(frame, grayFrame, CV_BGR2GRAY); // 흑백으로 변환
 		cvResize(grayFrame, outputImage, CV_INTER_LINEAR);
 		ConvertASCIIbyImage(screenBuffer, bufferSize, outputImage, DestWidth, DestHeight, extraSpace);
+		SetCursorPosition(0, videoHeightLimit / 2 - DestHeight / 2);
 		printf(screenBuffer);
 
 
@@ -245,41 +302,6 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 			lastPauseTick = currentTick;
 		}
 
-		percent = (float)currentFrame / MAX * 100;
-		bar_count = percent / tick;
-		int barIndex = 0;
-
-		for (int i = 0; i < LEN; i++)
-		{
-			if (bar_count > barIndex)
-				playBarBuffer[i] = bar;
-			else
-				playBarBuffer[i] = blank;
-			barIndex++;
-		}
-		playBarBuffer[LEN - 1] = '\0';
-		SetConsoleTextColor(Green);
-		SetCursorPosition(0, DestHeight + 1);
-		puts(playBarBuffer);
-		puts(playBarBuffer);
-
-		SetConsoleTextColor(White);
-		percent = (float)Volume / 1.0f * 100;
-		bar_count = percent / volumeTick;
-		barIndex = 0;
-		for (int i = 0; i < VolumeLEN; i++)
-		{
-			if (bar_count > barIndex)
-				volumeBarBuffer[i] = bar;
-			else
-				volumeBarBuffer[i] = blank;
-			barIndex++;
-		}
-		volumeBarBuffer[VolumeLEN - 1] = '\0';
-		SetCursorPosition(LEN + 1, DestHeight + 1);
-		puts(volumeBarBuffer);
-		SetCursorPosition(LEN + 1, DestHeight + 2);
-		puts(volumeBarBuffer);
 
 		if (!isPause) {
 			currentFrame++;
@@ -299,8 +321,100 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 	cvReleaseImage(&spauseImage);
 	cvReleaseImage(&playImage);
 	cvReleaseImage(&pauseImage);
+	FMOD_System_Close(FMODSystem);
+	FMOD_System_Release(FMODSystem);
+	system("cls");
+
+	return repeatFlag;
+}
+
+void PlaySimpleASCIIVideo(const char* videoName, int width, int heightLimit, int* fontSize) {
+	char videoAdress[150] = "";
+	sprintf_s(videoAdress, sizeof(videoAdress), BASE_VIDEO_ADRESS, videoName);
+
+	CvCapture* capture = cvCreateFileCapture(videoAdress);
+
+	if (!capture)
+	{
+		printf("Could not open video file\n");
+		printf("%s", videoAdress);
+		return -1;
+	}
+
+	IplImage* frame = 0;
+	IplImage* grayFrame;
+	IplImage* outputImage;
+
+	float frameWidth = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH);
+	float frameHeight = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT);
+	float frameRate = cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
+	int frameCount = cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_COUNT);
+
+	float imageRatio = 0.0f;
+
+
+	if (frameWidth > frameHeight)
+		imageRatio = frameWidth / frameHeight;
+	else
+		imageRatio = frameHeight / frameWidth;
+
+	int DestHeight = (width / 2) / imageRatio;
+
+	if (DestHeight > heightLimit && heightLimit != 0) {
+		DestHeight = heightLimit;
+	}
+
+	// 한 프레임을 저장할 버퍼의 크기
+	int bufferSize = width * DestHeight + DestHeight;
+
+	char* screenBuffer = malloc(bufferSize * (sizeof(char)));
+
+	char commandMessage[150] = "";
+	SetConsoleFontSize(*fontSize);
+	sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d", width, heightLimit);
+	system(commandMessage);
+	SetCursorHide();
+
+	int currentFrame = 0;
+
+	DWORD lastTick = 0;
+	DWORD lastInputTick = 0;
+	DWORD lastPauseTick = 0;
+	while (currentFrame < frameCount)
+	{
+		SetCursorPosition(0, 0);
+		SetConsoleTextColor(White);
+		DWORD currentTick = GetTickCount();
+
+		if (currentTick - lastTick < 32)
+			continue;
+		lastTick = currentTick;
+
+		frame = cvQueryFrame(capture); // 프레임을 가져옴
+
+		if (!frame)
+			break;
+
+		grayFrame = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
+		outputImage = cvCreateImage(cvSize(width, DestHeight), IPL_DEPTH_8U, CV_LOAD_IMAGE_GRAYSCALE);
+
+		cvCvtColor(frame, grayFrame, CV_BGR2GRAY); // 흑백으로 변환
+		cvResize(grayFrame, outputImage, CV_INTER_LINEAR);
+		ConvertASCIIbyImage(screenBuffer, bufferSize, outputImage, width, DestHeight, 0);
+		SetCursorPosition(0, heightLimit / 2 - DestHeight / 2);
+		printf(screenBuffer);
+
+		currentFrame++;
+	}
+
+	// 메모리 할당 해제
+
+	free(screenBuffer);
+	cvReleaseCapture(&capture);
+	cvReleaseImage(&grayFrame);
 	system("cls");
 }
+
 
 void ConvertASCIIbyImage(char* targetBuffer, int bufferSize, IplImage* outputImage, int width, int height, int extraSpaces) {
 	// 명도를 표현할 character
