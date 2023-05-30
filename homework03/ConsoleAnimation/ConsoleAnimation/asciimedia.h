@@ -8,6 +8,9 @@
 #include <stdbool.h>
 #include <Windows.h>
 
+#include "input.h"
+#include "utilites.h"
+
 #define BASE_VIDEO_ADRESS "Resources\\Videos\\%s.mp4"
 #define BASE_AUDIO_ADRESS "Resources\\Audios\\%s.mp3"
 

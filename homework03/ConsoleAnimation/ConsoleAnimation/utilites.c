@@ -1,5 +1,4 @@
 #pragma once
-#include "main.h"
 #include "utilites.h"
 
 void SetCursorPosition(int x, int y) {

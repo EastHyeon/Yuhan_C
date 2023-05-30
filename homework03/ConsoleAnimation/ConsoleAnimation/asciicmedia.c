@@ -1,5 +1,4 @@
 #include "asciimedia.h"
-#include "input.h"
 
 void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, int widthLimit, int* fontSize) {
 	char videoAdress[150] = "";
@@ -166,8 +165,8 @@ void PlayASCIIVideo(const char* videoName, FMOD_SYSTEM* FMODSystem, int height, 
 				isPause = true;
 				FMOD_Channel_SetPaused(Channel, isPause);
 				*fontSize = *fontSize - 1;
-				if (*fontSize <= 0) {
-					*fontSize = 1;
+				if (*fontSize <= 1) {
+					*fontSize = 2;
 				}
 				SetConsoleFontSize(*fontSize);
 				sprintf_s(commandMessage, sizeof(commandMessage), "mode con cols=%d lines=%d | title Playing: %s / FontSize: %d", widthLimit, height, videoName, *fontSize);
@@ -335,6 +334,11 @@ int WriteImageByWidth(const char* fileName, char* targetBuffer, int DestWidth, i
 
 	IplImage* stitleImage;
 	stitleImage = cvLoadImage(fileName, 0);
+
+	if (!stitleImage) {
+		printf("Could not open video file\n");
+		printf("%s", fileName);
+	}
 
 	int swidth = stitleImage->width;
 	int sheight = stitleImage->height;

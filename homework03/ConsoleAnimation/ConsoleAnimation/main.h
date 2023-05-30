@@ -7,8 +7,21 @@
 
 #define SCREEN_WIDTH 500
 #define SCREEN_HEIGHT 120
-#define ARRAY_SIZE (SCREEN_WIDTH / FONT_RATIO) * (SCREEN_HEIGHT / FONT_RATIO) + SCREEN_HEIGHT / FONT_RATIO
-#define FONT_RATIO 5
+#define FONT_RATIO 4
+#define BUFFER_SIZE SCREEN_WIDTH / FONT_RATIO * SCREEN_HEIGHT / FONT_RATIO + SCREEN_HEIGHT / FONT_RATIO
+
+enum GameState {
+	EXIT = 0,
+	EXITMENU,
+	MAINMENU,
+	VIDEOPLAY,
+	HELPMENU
+};
 
 void InitializeMenu();
+void InitializeBuffer(char*);
 void PrintTitleScreen(void);
+enum GameState WriteMainMenuScreen(char*);
+enum GameState PlayVideo(const char*);
+int WriteStringCenterToBuffer(const char*, char*, int);
+void WriteStringToBuffer(const char*, char*, int, int);
