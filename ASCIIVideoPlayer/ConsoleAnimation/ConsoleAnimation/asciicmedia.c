@@ -12,7 +12,6 @@ int PlayASCIIVideo(const char* videoName, int width, int heightLimit, int* fontS
 
 	int repeatFlag = 1;
 
-	bool isPaused = false;
 	int Key;
 	FMOD_CHANNEL* Channel = 0;
 	float Volume = 0.1f;
@@ -137,36 +136,68 @@ int PlayASCIIVideo(const char* videoName, int width, int heightLimit, int* fontS
 
 		if (currentTick - lastInputTick > 1000 / 7) {
 			if (GetAsyncKeyState(VK_LEFT) & 0x8001) {
-				isPause = true;
-				FMOD_Channel_SetPaused(Channel, isPause);
-				FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
-				currentFrame = currentFrame - (24 * 5);
-				currentTime = currentTime - 5000;
-				if (currentFrame <= 0) {
-					currentFrame = 0;
-					currentTime = 0;
+				if (!isPause) {
+					isPause = true;
+					FMOD_Channel_SetPaused(Channel, isPause);
+					FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
+					currentFrame = currentFrame - (24 * 5);
+					currentTime = currentTime - 5000;
+					if (currentFrame <= 0) {
+						currentFrame = 0;
+						currentTime = 0;
+					}
+					FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
+					cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
+					frame = cvQueryFrame(capture);
+					isPause = false;
+					FMOD_Channel_SetPaused(Channel, isPause);
 				}
-				FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
-				cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
-				frame = cvQueryFrame(capture);
-				isPause = false;
-				FMOD_Channel_SetPaused(Channel, isPause);
+				else {
+					FMOD_Channel_SetPaused(Channel, isPause);
+					FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
+					currentFrame = currentFrame - (24 * 5);
+					currentTime = currentTime - 5000;
+					if (currentFrame <= 0) {
+						currentFrame = 0;
+						currentTime = 0;
+					}
+					FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
+					cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
+					frame = cvQueryFrame(capture);
+					FMOD_Channel_SetPaused(Channel, isPause);
+				}
 			}
 			if (GetAsyncKeyState(VK_RIGHT) & 0x8001) {
-				isPause = true;
-				FMOD_Channel_SetPaused(Channel, isPause);
-				FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
-				currentFrame = currentFrame + (24 * 5);
-				currentTime = currentTime + 5000;
-				if (currentFrame >= frameCount) {
-					currentFrame = frameCount - 1;
-					currentTime = maxTime - 1;
+				if (!isPause) {
+					isPause = true;
+					FMOD_Channel_SetPaused(Channel, isPause);
+					FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
+					currentFrame = currentFrame + (24 * 5);
+					currentTime = currentTime + 5000;
+					if (currentFrame >= frameCount) {
+						currentFrame = frameCount - 1;
+						currentTime = maxTime - 1;
+					}
+					FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
+					cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
+					frame = cvQueryFrame(capture);
+					isPause = false;
+					FMOD_Channel_SetPaused(Channel, isPause);
 				}
-				FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
-				cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
-				frame = cvQueryFrame(capture);
-				isPause = false;
-				FMOD_Channel_SetPaused(Channel, isPause);
+				else {
+					FMOD_Channel_SetPaused(Channel, isPause);
+					FMOD_Channel_GetPosition(Channel, &currentTime, FMOD_TIMEUNIT_MS);
+					currentFrame = currentFrame + (24 * 5);
+					currentTime = currentTime + 5000;
+					if (currentFrame >= frameCount) {
+						currentFrame = frameCount - 1;
+						currentTime = maxTime - 1;
+					}
+					FMOD_Channel_SetPosition(Channel, currentTime, FMOD_TIMEUNIT_MS);
+					cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, currentFrame);
+					frame = cvQueryFrame(capture);
+					FMOD_Channel_SetPaused(Channel, isPause);
+				}
 			}
 			if (GetAsyncKeyState(VK_UP) & 0x8001) {
 				Volume += 0.1f;
